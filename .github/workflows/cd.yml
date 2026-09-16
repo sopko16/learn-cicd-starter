@@ -38,3 +38,6 @@ jobs:
             --project=stellar-stream-508812-t5 \
             --tag us-central1-docker.pkg.dev/stellar-stream-508812-t5/notely-ar-repo/notely:latest \
             .
+
+      - name: Deploy to Cloud Run
+        run: gcloud run deploy notely --image us-central1-docker.pkg.dev/stellar-stream-508812-t5/notely-ar-repo/notely:latest --region us-central1 --allow-unauthenticated --project stellar-stream-508812-t5 --max-instances=4
