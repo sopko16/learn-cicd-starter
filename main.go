@@ -1,6 +1,9 @@
 package main
 
 import (
+	"strconv"
+	"time"
+	"fmt"
 	"database/sql"
 	"embed"
 	"io"
@@ -99,6 +102,6 @@ func main() {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	log.Printf("Serving on port: %s\n", portNum)
+	log.Printf("Serving on port: %d\n", portNum)
 	log.Fatal(srv.ListenAndServe())
 }
