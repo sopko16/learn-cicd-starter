@@ -94,9 +94,10 @@ func main() {
 
 	router.Mount("/v1", v1Router)
 	srv := &http.Server{
-	Addr:              fmt.Sprintf(":%d", portNum),
-	Handler:           router,
-	ReadHeaderTimeout: 5 * time.Second,
+		Addr:              fmt.Sprintf(":%d", portNum),
+		Handler:           router,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
 
 	log.Printf("Serving on port: %s\n", portNum)
 	log.Fatal(srv.ListenAndServe())
