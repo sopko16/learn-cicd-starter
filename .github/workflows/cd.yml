@@ -8,6 +8,9 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     
     steps:
       - name: Check out code
@@ -18,6 +21,12 @@ jobs:
         with:
           go-version-file: go.mod
       
+      # Install Goose for database migrations
+      - name: Install Goose
+        run: |
+          go install github.com/pressly/goose/v3/cmd/goose@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
       - name: Build production app
         run: bash scripts/buildprod.sh
       
@@ -31,7 +40,7 @@ jobs:
       - name: Set up Google Cloud CLI
         uses: google-github-actions/setup-gcloud@v3
 
-      # Build Docker image and push to Artifact Registry
+      # Build and push Docker image
       - name: Build and push Docker image
         run: |
           gcloud builds submit \
@@ -39,5 +48,16 @@ jobs:
             --tag us-central1-docker.pkg.dev/stellar-stream-508812-t5/notely-ar-repo/notely:latest \
             .
 
+      # Run migrations BEFORE deployment
+      - name: Run database migrations
+        run: bash scripts/migrateup.sh
+
+      # Deploy to Cloud Run
       - name: Deploy to Cloud Run
-        run: gcloud run deploy notely --image us-central1-docker.pkg.dev/stellar-stream-508812-t5/notely-ar-repo/notely:latest --region us-central1 --allow-unauthenticated --project stellar-stream-508812-t5 --max-instances=4
+        run: |
+          gcloud run deploy notely \
+            --image us-central1-docker.pkg.dev/stellar-stream-508812-t5/notely-ar-repo/notely:latest \
+            --region us-central1 \
+            --allow-unauthenticated \
+            --project stellar-stream-508812-t5 \
+            --max-instances=4
