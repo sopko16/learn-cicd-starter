@@ -1,15 +1,15 @@
 package main
 
 import (
-	"strconv"
-	"time"
-	"fmt"
 	"database/sql"
 	"embed"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
@@ -41,7 +41,6 @@ func main() {
 	if err != nil || portNum < 1 || portNum > 65535 {
 		log.Fatal("invalid port")
 	}
-
 
 	apiCfg := apiConfig{}
 
