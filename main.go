@@ -34,6 +34,11 @@ func main() {
 	if port == "" {
 		log.Fatal("PORT environment variable is not set")
 	}
+	portNum, err := strconv.Atoi(port)
+	if err != nil || portNum < 1 || portNum > 65535 {
+		log.Fatal("invalid port")
+	}
+
 
 	apiCfg := apiConfig{}
 
@@ -89,10 +94,10 @@ func main() {
 
 	router.Mount("/v1", v1Router)
 	srv := &http.Server{
-		Addr:    ":" + port,
-		Handler: router,
-	}
+	Addr:              fmt.Sprintf(":%d", portNum),
+	Handler:           router,
+	ReadHeaderTimeout: 5 * time.Second,
 
-	log.Printf("Serving on port: %s\n", port)
+	log.Printf("Serving on port: %s\n", portNum)
 	log.Fatal(srv.ListenAndServe())
 }
